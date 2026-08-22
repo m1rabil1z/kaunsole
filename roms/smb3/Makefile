@@ -1,6 +1,6 @@
 ASSET_SRC := $(shell find assets -type f)
 ASSET_OBJ := $(ASSET_SRC:assets/%=build/assets/%.o)
-SRCS := main.c camera.c
+SRCS := main.c camera.c collision.c enemy.c
 BUILDDIR := .
 
 $(BUILDDIR)/smb3: $(SRCS) $(ASSETS)

@@ -81,6 +81,10 @@ const uint16_t blocks[256][4] = {
     { TILE(6, 6, 13), TILE(6, 7, 1), TILE(6, 6, 14), TILE(6, 7, 2) }, /* tree_tr */
     { TILE(6, 0, 5), TILE(6, 0, 5), TILE(6, 7, 3), TILE(6, 7, 3) }, /* tree_bl */
     { TILE(6, 7, 4), TILE(6, 7, 4), TILE(6, 0, 5), TILE(6, 0, 5) }, /* tree_br */
+
+    { TILE(12, 26, 4), TILE(12, 26, 5), TILE(12, 26, 6), TILE(12, 26, 7)}, /*bulletb_head*/
+    { TILE(12, 30, 12), TILE(12, 30, 13), TILE(12, 30, 14), TILE(12, 30, 15)}, /*bulletb_top*/
+    { TILE(12, 30, 4), TILE(12, 30, 4), TILE(12, 30, 5), TILE(12, 30, 5)}, /*bulletb_bottom*/
 };
 
 const struct obj1d objs1d[256] = {
@@ -192,6 +196,18 @@ const struct obj1d objs1d[256] = {
         .start = 49,
         .flags = O1_MIDDLE
     },
+    (struct obj1d) /* BULLETB_HEAD */{
+        .start = 51,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d)/* BULLETB_TOP */{
+        .start = 52,
+        .flags = O1_MIDDLE
+    },
+    (struct obj1d)/* BULLETB_BOTTOM */{
+        .start = 53,
+        .flags = O1_MIDDLE
+    },
 };
 
 const struct obj2d objs2d[256] = {
@@ -287,6 +303,16 @@ const struct obj2d objs2d[256] = {
         // TREE
         .start = (uint16_t []) { O1(25, 0), O1(26, 0), O1(26, 0)},
         .flags =  O2_VERTICAL | O2_TERMINAL | O2_MIDDLE,
+    },
+    (struct obj2d){
+        // BULLETB_HEAD
+        .start = (uint16_t []) { O1(27, 0), O1(27, 0), O1(27, 0)},
+        .flags = O2_VERTICAL,
+    },
+    (struct obj2d){
+        // BULLETB_SHAFT
+        .start = (uint16_t []) { O1(28, 0), O1(29, 0), O1(29, 0)},
+        .flags =  O2_VERTICAL | O2_TERMINAL,
     },
 };
 
