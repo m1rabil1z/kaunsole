@@ -45,7 +45,7 @@ bool collidingp(struct sprite *sprite, uint8_t y, uint8_t x) {
 extern uint8_t camera_x;
 extern uint8_t camera_y;
 extern uint8_t active_screen;
-extern uint16_t block_buffer[N_SCREENS][16][16];
+extern struct block_entry block_buffer[N_SCREENS][16][16];
 
 
 //COLLISION HELPER FUNCTION
@@ -66,7 +66,15 @@ uint16_t solid_at(int16_t draw_x, int16_t draw_y) {
     }
 
     uint8_t by = (draw_y + camera_y) / 16;
-    return block_buffer[screen][by][bx];
+    return block_buffer[screen][by][bx].id;
+
+    uint8_t id = block_buffer[screen][by][bx].id;
+
+    if (id == 32) {
+        return 0;
+    }
+
+    return id;
 }
 
 

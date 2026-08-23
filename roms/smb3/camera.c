@@ -11,6 +11,7 @@
 // MAP
 
 extern uint16_t font[256];
+struct block_entry block_buffer[N_SCREENS][16][16];
 
 const uint16_t blocks[256][4] = {
     { TILE(0, 3, 0), TILE(0, 3, 0), TILE(0, 3, 0), TILE(0, 3, 0) }, /* blank */
@@ -85,6 +86,8 @@ const uint16_t blocks[256][4] = {
     { TILE(12, 26, 4), TILE(12, 26, 5), TILE(12, 26, 6), TILE(12, 26, 7)}, /*bulletb_head*/
     { TILE(12, 30, 12), TILE(12, 30, 13), TILE(12, 30, 14), TILE(12, 30, 15)}, /*bulletb_top*/
     { TILE(12, 30, 4), TILE(12, 30, 4), TILE(12, 30, 5), TILE(12, 30, 5)}, /*bulletb_bottom*/
+
+    { TILE(7, 30, 8), TILE(7, 30, 9), TILE(7, 30, 10), TILE(7, 30, 11) }, /* coin */
 };
 
 const struct obj1d objs1d[256] = {
@@ -208,6 +211,10 @@ const struct obj1d objs1d[256] = {
         .start = 53,
         .flags = O1_MIDDLE
     },
+    (struct obj1d) /* COIN */ {
+        .start = 54, 
+        .flags = O1_MIDDLE,
+    },
 };
 
 const struct obj2d objs2d[256] = {
@@ -314,6 +321,10 @@ const struct obj2d objs2d[256] = {
         .start = (uint16_t []) { O1(28, 0), O1(29, 0), O1(29, 0)},
         .flags =  O2_VERTICAL | O2_TERMINAL,
     },
+    (struct obj2d) /* COIN */ {
+        .start = (uint16_t []) { O1(30, 0)},
+        .flags = O2_VERTICAL,
+    },
 };
 
 
@@ -324,13 +335,6 @@ const uint32_t *active_map;
 uint8_t active_screen;
 uint8_t read_offset;
 uint8_t write_offset;
-struct block_entry {
-    uint8_t id;
-    uint8_t palette;
-};
-
-struct block_entry block_buffer[N_SCREENS][16][16];
-
 
 void stream_screen(bool reverse) {
     uint32_t o;

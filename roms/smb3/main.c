@@ -26,17 +26,17 @@
 
 const uint32_t map[] = {
     O2(15, 0, 11, 1, 1, 1),
-    O2(9, 4, 8, 0, 1, 2),
+    O2(20, 4, 8, 0, 1, 2),
     O2(5, 8, 8, 0, 1, 3),
-    O2(9, 9, 8, 0, 1, 2),
+    O2(20, 9, 8, 0, 1, 2),
     O2(5, 10, 8, 0, 1, 3),
     O2(5, 10, 5, 0, 1, 3),
-    O2(9, 11, 8, 0, 1, 2),
+    O2(20, 11, 8, 0, 1, 2),
     O2(5, 12, 8, 0, 1, 3),
     O2(15, 11, 11, 3, 1, 1),
     O2(5, 0, 12, 15, 4, 3) | O2_NEXT_PAGE, //SCREEN 0
 
-    O2(19, 0, 9, 1, 3, 1),
+    O2(3, 0, 9, 1, 3, 1),
     O2(3, 6, 8, 1, 4, 1),
     O2(15, 9, 11, 2, 1, 1),
     O2(3, 13, 6, 1, 6, 1),
@@ -343,9 +343,45 @@ void run() {
     }
 }
 
+#define BLOCK_COIN 32
+
+uint8_t coin_count = 0;
+
 extern uint8_t camera_x;
 extern uint8_t camera_y;
 extern uint8_t active_screen;
+
+static void check_coin_at_point(int16_t draw_x, int16_t draw_y) {
+    int32_t raw_x = draw_x + camera_x;
+    uint8_t screen;
+    uint8_t bx;
+
+    if (raw_x < 0) {
+        screen = active_screen;
+        bx = 0;
+    } else if (raw_x < 256) {
+        screen = active_screen;
+        bx = raw_x / 16;
+    } else {
+        screen = (active_screen + 1) % N_SCREENS;
+        bx = (raw_x - 256) / 16;
+    }
+
+    uint8_t by = (draw_y + camera_y) / 16;
+
+    if (block_buffer[screen][by][bx].id == BLOCK_COIN) {
+        block_buffer[screen][by][bx].id = 0;
+        coin_count++;
+    }
+}
+
+static void check_mario_coin_collisions(struct entity *mario_ent) {
+    struct sprite *s = &mario_ent->sprite;
+    check_coin_at_point(s->x + s->hitbox.x, s->y + s->hitbox.y);
+    check_coin_at_point(s->x + s->hitbox.x + s->hitbox.width, s->y + s->hitbox.y);
+    check_coin_at_point(s->x + s->hitbox.x, s->y + s->hitbox.y + s->hitbox.height);
+    check_coin_at_point(s->x + s->hitbox.x + s->hitbox.width, s->y + s->hitbox.y + s->hitbox.height);
+}
 
 uint8_t tile_attr = 0;
 
@@ -591,6 +627,8 @@ void update(struct input input, uint32_t time) {
     mario.sprite.x -= center;
     camera_move(0, center);
 
+    check_mario_coin_collisions(&mario);
+
     enemy_update(&enemy1, deltatime);
     handle_entity_collisions(&mario, entities, NUM_ENTITIES);
 
@@ -658,6 +696,8 @@ void draw() {
     draw_chars(buf, font, 1, 0, 0);
     snprintf(buf, 64, "ACTIVE SCREEN %u", active_screen);
     draw_chars(buf, font, 2, 0, 0);
+    snprintf(buf, 64, "COINS %u", coin_count);
+    draw_chars(buf, font, 3, 0, 0);
 
     // draw_sprite(&box.sprite);
     if (mario.type != ENTITY_KILLED) {
